@@ -7,6 +7,10 @@ from typing import List, Optional
 @dataclass
 class Person:
     """Class for representing a person"""
+
+    def __init__(self):
+        pass
+
     id: uuid.UUID
     name: str
 
@@ -14,6 +18,10 @@ class Person:
 @dataclass
 class Genre:
     """Class for representing a genre"""
+
+    def __init__(self):
+        pass
+
     id: uuid.UUID
     name: str
 
@@ -21,6 +29,10 @@ class Genre:
 @dataclass
 class Filmwork:
     """Class for film presentation"""
+
+    def __init__(self):
+        pass
+
     id: uuid.UUID
     title: str
     description: str
@@ -71,6 +83,10 @@ class FilmworkStorage:
     """
          Container class for storing Filmwork objects
     """
+
+    def __init__(self):
+        pass
+
     objects: List[Optional[Filmwork]] = field(default_factory=list)
 
     def get_or_append(self, film: Filmwork) -> Filmwork:

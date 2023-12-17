@@ -6,6 +6,9 @@ import yaml
 
 
 class BaseStorage:
+    def __init__(self):
+        pass
+
     @abc.abstractmethod
     def save_state(self, state: dict) -> None:
         """Save state to persistent storage"""
@@ -21,6 +24,7 @@ class YamlFileStorage(BaseStorage):
     """
 
     def __init__(self, file_path: Optional[str] = None):
+        super().__init__()
         self.file_path = file_path
 
     def save_state(self, state: dict) -> None:
