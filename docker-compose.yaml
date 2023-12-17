@@ -40,16 +40,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/docker/volumes/movies_database_etl/_data # /var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/ # /var/lib/docker/volumes/movies_database_etl/_data
       - ./src/db:/docker-entrypoint-initdb.d
     env_file:
       - .env
 
   etl:
     container_name: etl_script
-    build:
-      context: postgres_to_es
-    image: etl:latest
+    image: souhair/es_postgres_etl:1.0.0
     pull_policy: never
     restart: always
     networks:

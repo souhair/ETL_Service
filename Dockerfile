@@ -1,6 +1,5 @@
 FROM python:3.9-slim-buster
 
-#WORKDIR /opt/ETL_Service
 WORKDIR /etl
 
 COPY requirements.txt .

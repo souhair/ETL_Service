@@ -197,8 +197,8 @@ def setup_logger() -> None:
 
 def get_state_storage() -> State:
     """Set up a container for storing states"""
-    state_file_path = Path(__file__).parent.joinpath(config.etl.state_file_name)
-    storage = YamlFileStorage(state_file_path)
+    state_file_name= Path(__file__).parent.joinpath(config.etl.state_file_name)
+    storage = YamlFileStorage(state_file_name)
     return State(storage)
 
 

@@ -31,7 +31,7 @@ class ETLSettings(BaseModel):
     postgres: PostgresSettings
     es: ESSettings
     fetch_delay: float
-    state_file_name: str
+    state_file_name: str  # state_file_name
     log_status_period: float
 
 
