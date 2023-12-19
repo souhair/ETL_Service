@@ -42,6 +42,7 @@ class ElasticSaver:
 
     def check_index(self) -> bool:
         """Checks the existence of an index with the specified name"""
+        logger.info('index exists !!!!!!!!!!!!')
         return self.es_client.indices.exists(index=self.index_name)
 
     @backoff(logger=logger)
@@ -66,7 +67,7 @@ class ElasticSaver:
                                       settings=settings,
                                       mappings=mappings)
 
-    def save_to_es(self, data: List[Filmwork]) -> None:
+    def save_to_es(self, data: List[Filmwork]) -> None:   # load data into es
         """Loads data into the index"""
         actions = [
             {
@@ -84,17 +85,14 @@ class ElasticSaver:
                                                stats_only=True)
 
                 if records:
-                    logger.info('Movies updated in Elasticsearch: %s',
-                                records)
+                    logger.info('Movies updated in Elasticsearch: %s', records)
                 if errors:
                     logger.error(
-                        'Errors occurred while updating Elasticsearch: %s',
-                        errors)
+                        'Errors occurred while updating Elasticsearch: %s', errors)
                 return
             except elasticsearch.ConnectionError as error:
                 logger.error(
-                        ' No connection to Elasticsearch %s',
-                        error)
+                        ' No connection to Elasticsearch %s', error)
                 self.es_client = self.get_es_client()
 
 
@@ -108,8 +106,8 @@ class DataTransformer:
     def __init__(self):
         self.inner_storage = FilmworkStorage()
 
-    def trasform_data(self, data: Iterator[Tuple]) -> List[Filmwork]:
-        """Converts data from postgres into class objects Filmork """
+    def transform_data(self, data: Iterator[Tuple]) -> List[Filmwork]:
+        """Converts data from postgres into class objects filmwork """
         if self.inner_storage:
             self.inner_storage.clear()
 
@@ -121,8 +119,7 @@ class DataTransformer:
             movie = self.inner_storage.get_or_append(candidate)
             movie.add_person(role, person)
             movie.add_genre(genre)
-        logger.info('Prepared films for updating in еlasticsearch: %s',
-                    self.inner_storage.count())
+        logger.info('Prepared films for updating in еlasticsearch: %s',  self.inner_storage.count())
 
         return self.inner_storage.get_all()
 
@@ -161,8 +158,10 @@ class PostgresLoader:
                 while True:
                     chunk_data = cursor.fetchmany(self.limit)
                     if not chunk_data:
+                        logger.info('row is not in chunk_data!!!!!')
                         return
                     for row in chunk_data:
+                        logger.info('row is in chunk_data!!!!!!!!!')
                         yield row
             except psycopg2.OperationalError as pg_error:
                 logger.error('Connection error when executing SQL query %s',
@@ -171,7 +170,7 @@ class PostgresLoader:
     @backoff(logger=logger, is_connection=False)
     def load_data(self) -> Union[Iterator[Tuple], List]:
         """
-        Unloads data updated after the specified date from postgres:
+        Unloads (extract) data updated after the specified date from postgres:
             - finds new records and determines the id of changed films
             - downloads information for these films
         """
@@ -195,10 +194,13 @@ def setup_logger() -> None:
     dictConfig(config.logger)
 
 
+
 def get_state_storage() -> State:
     """Set up a container for storing states"""
-    state_file_path = Path(__file__).parent.joinpath(config.etl.state_file_name)
-    storage = YamlFileStorage(state_file_path)
+# My_Path= Path(__file__).parent.joinpath(config.etl.state_file_name)
+    state_file_name: Path= Path(__file__).parent.joinpath(config.etl.state_file_name)
+    #state_file_name = './storage_last/state_file_name'
+    storage = YamlFileStorage(str(state_file_name))
     return State(storage)
 
 
@@ -214,8 +216,8 @@ def start_etl_process() -> None:
         now = dt.datetime.utcnow()
         data = postgres.load_data()
         if data:
-            tranformed_data = transformer.trasform_data(data)
-            elastic.save_to_es(tranformed_data)
+            transformed_data = transformer.transform_data(data)
+            elastic.save_to_es(transformed_data)
         if now > time_log_status + dt.timedelta(seconds=config.etl.log_status_period):
             logger.info('The script works normally...')
             time_log_status = now

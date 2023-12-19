@@ -1,3 +1,5 @@
+
+
 import datetime as dt
 import uuid
 from dataclasses import dataclass, field
@@ -7,6 +9,8 @@ from typing import List, Optional
 @dataclass
 class Person:
     """Class for representing a person"""
+
+
     id: uuid.UUID
     name: str
 
@@ -14,6 +18,8 @@ class Person:
 @dataclass
 class Genre:
     """Class for representing a genre"""
+
+
     id: uuid.UUID
     name: str
 
@@ -21,6 +27,7 @@ class Genre:
 @dataclass
 class Filmwork:
     """Class for film presentation"""
+
     id: uuid.UUID
     title: str
     description: str
@@ -71,6 +78,7 @@ class FilmworkStorage:
     """
          Container class for storing Filmwork objects
     """
+
     objects: List[Optional[Filmwork]] = field(default_factory=list)
 
     def get_or_append(self, film: Filmwork) -> Filmwork:
@@ -80,9 +88,11 @@ class FilmworkStorage:
          """
         if self.count:
             for item in self.objects:
+                logger.info('check for loop')
                 if item.id == film.id:
-                    return item
-        self.objects.append(film)
+                    logger.info('check item_id = film_id')
+                return item
+            self.objects.append(film)
         return film
 
     def get_all(self) -> List[Optional[Filmwork]]:
