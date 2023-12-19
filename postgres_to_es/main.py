@@ -181,7 +181,6 @@ class PostgresLoader:
             films_data = self.executor(sql.movies_data, (films_ids,))
             self.state.set_state('last_update', str(now))
             self.check_date = now
-            logger.info('load last_update !!!!!!!!!!!!!!!!!')
             return films_data
         return []
 
@@ -216,11 +215,9 @@ def start_etl_process() -> None:
     while True:
         now = dt.datetime.utcnow()
         data = postgres.load_data()
-        logger.info(data)
         if data:
             transformed_data = transformer.transform_data(data)
             elastic.save_to_es(transformed_data)
-            logger.info('check data transformer!!!!!!!!!!!!!')
         if now > time_log_status + dt.timedelta(seconds=config.etl.log_status_period):
             logger.info('The script works normally...')
             time_log_status = now
@@ -228,8 +225,8 @@ def start_etl_process() -> None:
 
 
 if __name__ == '__main__':
-    #config_file = Path(__file__).parent.joinpath(CONFIG_FILENAME)
-    #config_dict = yaml.safe_load(config_file.open(encoding='utf-8'))
-    #config = Config.parse_obj(config_dict)
-    #setup_logger()
+    config_file = Path(__file__).parent.joinpath(CONFIG_FILENAME)
+    config_dict = yaml.safe_load(config_file.open(encoding='utf-8'))
+    config = Config.parse_obj(config_dict)
+    setup_logger()
     start_etl_process()
