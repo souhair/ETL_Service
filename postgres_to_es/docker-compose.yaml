@@ -1,5 +1,10 @@
 version: '3.8'
 services:
+#  test:
+#    build: ./s.sh
+#    volumes:
+#      - ./s.sh:/s.sh
+
   es01:
     image: elasticsearch:8.11.1
     container_name: es01_etl
@@ -47,7 +52,9 @@ services:
 
   etl:
     container_name: etl_script
-    image: souhair/es_postgres_etl:1.0.0
+    build:
+      context: .
+    image: etl:latest
     pull_policy: never
     restart: always
     networks:

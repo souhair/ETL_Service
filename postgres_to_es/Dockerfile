@@ -6,6 +6,5 @@ COPY requirements.txt .
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-COPY postgres_to_es .
-
+COPY . .
 CMD ["python3", "main.py"]

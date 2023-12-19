@@ -11,7 +11,7 @@ movies_data = """
         p.id,
         p.full_name,
         g.id,
-        g.name 
+        g.name
     FROM content.film_work AS fw
     LEFT JOIN content.person_film_work AS pfw ON pfw.film_work_id = fw.id
     LEFT JOIN content.person AS p ON p.id = pfw.person_id
